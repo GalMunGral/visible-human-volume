@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "dev": "parcel index.html public/**/*",
+    "build": "parcel build --public-url /visible-human-js index.html && cp -r public dist"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.14.4",
+    "@types/three": "^0.163.0",
+    "parcel": "^2.14.4",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
+    "three": "^0.163.0"
+  }
+}
