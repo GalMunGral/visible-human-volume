@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "parcel index.html public/**/*",
-    "build": "parcel build --public-url /visible-human-js index.html && cp -r public dist"
+    "build": "parcel build --public-url /visible-human-volume index.html && cp -r public dist"
   },
   "devDependencies": {
     "@parcel/transformer-glsl": "^2.14.4",
