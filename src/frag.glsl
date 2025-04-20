@@ -76,30 +76,30 @@ float phong_shading(vec3 p, vec3 n) {
 }
 
 void main() {
-  vec4 C = vec4(0.0);
+  vec4 accumulated = vec4(0.0);
 
-  vec3 p = eye;
-  vec3 d = step_size * ray_dir();
+  vec3 cur_p = eye;
+  vec3 step = step_size * ray_dir();
   vec3 dims = normalize(u_dims);
 
   for(int i = 0; i < steps; ++i) {
-    if(in_bounds(p, dims)) {
-      vec3 texcoords = get_texcoords(p, dims);
+    if(in_bounds(cur_p, dims)) {
+      vec3 texcoords = get_texcoords(cur_p, dims);
       vec4 color = texture(volume, texcoords);
       vec3 grad = gradient(volume, texcoords);
 
       vec3 n = normalize(grad);
-      float I = phong_shading(p, n);
+      float I = phong_shading(cur_p, n);
 
       float t = clamp01(abs(color.r - peak) / band_width);
       float a = length(grad) > min_grad
         ? mix(alpha, 0.0, t)
         : 0.0;
 
-      C.rgb += (1.0 - C.a) * a * I;
-      C.a += (1.0 - C.a) * a;
+      accumulated.rgb += (1.0 - accumulated.a) * a * I;
+      accumulated.a += (1.0 - accumulated.a) * a;
     }
-    p += d;
+    cur_p += step;
   }
-  fragColor = vec4(C.rgb, 1.0);
+  fragColor = vec4(accumulated.rgb, 1.0);
 }
