@@ -1,4 +1,4 @@
-import { RayMarching } from "./RM";
+import { RayMarching } from "./ray-marching";
 import { load3dTexture } from "./texture";
 import * as THREE from "three";
 
