@@ -5,19 +5,22 @@ precision mediump float;
 #define FLT_MAX 3.402823466e+38
 #define M_PI 3.1415926535897932384626433832795
 
-const float draw_dist = 1.5;
-const int steps = 200;
+const float draw_dist = 2.0;
+const int steps = 500;
 const float step_size = draw_dist / float(steps);
-const float band_width = 0.1;
-const float alpha = 10.0 / float(steps);
+
 const float h = 0.01;
-const float min_grad = 0.1;
 
 const vec3 l = normalize(vec3(1.0, 1.0, 1.0));
+const vec3 skin_color = vec3(0.96, 0.76, 0.62);
+const vec3 tissue_color = vec3(0.7, 0.7, 0.9);
+const vec3 bone_color = vec3(0.96, 0.96, 0.86);
+
+const float band_width = 0.1;
+const float alpha = 10.0 / float(steps);
 
 uniform sampler3D volume;
 uniform vec3 u_dims;
-
 uniform float peak;
 
 uniform vec2 viewport;
@@ -55,7 +58,7 @@ vec3 get_texcoords(vec3 p, vec3 dims) {
 }
 
 vec4 D(sampler3D sampler, vec3 texcoords, vec3 h) {
-  return texture(sampler, texcoords + h) - texture(sampler, texcoords - h);
+  return texture(sampler, texcoords + h) - texture(sampler, texcoords - h) / (2.0 * length(h));
 }
 
 vec3 gradient(sampler3D sampler, vec3 texcoords) {
@@ -70,8 +73,8 @@ float phong_shading(vec3 p, vec3 n) {
   vec3 e = normalize(eye - p);
   vec3 r = 2.0 * dot(l, n) * n - l;
   float ambient = 0.5;
-  float diffuse = 0.5 * clamp01(dot(n, l));
-  float specular = 0.5 * pow(clamp01(dot(e, r)), 4.0);
+  float diffuse = 0.8 * clamp01(dot(n, l));
+  float specular = 0.5 * pow(clamp01(dot(e, r)), 2.0);
   return ambient + diffuse + specular;
 }
 
@@ -92,9 +95,7 @@ void main() {
       float I = phong_shading(cur_p, n);
 
       float t = clamp01(abs(color.r - peak) / band_width);
-      float a = length(grad) > min_grad
-        ? mix(alpha, 0.0, t)
-        : 0.0;
+      float a = length(grad) > 0.0 ? mix(alpha, 0.0, t) : 0.0;
 
       accumulated.rgb += (1.0 - accumulated.a) * a * I;
       accumulated.a += (1.0 - accumulated.a) * a;
