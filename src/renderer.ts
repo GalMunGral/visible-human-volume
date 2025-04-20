@@ -3,13 +3,11 @@ import { createProgramFromScripts } from "./utils";
 import vertexShaderSrc from "./vert.glsl";
 import fragmentShaderSrc from "./frag.glsl";
 
-const filterInput = document.querySelector("#filter") as HTMLInputElement;
-
-export class RayMarching {
+export class Renderer {
   private gl: WebGL2RenderingContext | null = null;
   private program: WebGLProgram | null = null;
 
-  private eye = new THREE.Vector3(1, 1, 0.2);
+  private eye = new THREE.Vector3(1, 1, 0);
   private forward = this.eye.clone().multiplyScalar(-1).normalize();
   private right = this.forward
     .clone()
@@ -29,8 +27,12 @@ export class RayMarching {
   private prevX = -1;
   private prevY = -1;
 
+  private filterInput = document.querySelector("#filter") as HTMLInputElement;
+
   constructor(private canvas: HTMLCanvasElement, private dims: THREE.Vector3) {
     (async () => {
+      this.filterInput.value = "0";
+
       const r = 1;
       canvas.width = 512 / r;
       canvas.height = 512 / r;
@@ -182,7 +184,7 @@ export class RayMarching {
     };
 
     gl.uniform1i(L("volume"), 0);
-    gl.uniform1f(L("peak"), Number(filterInput.value));
+    gl.uniform1f(L("peak"), Number(this.filterInput.value));
     gl.uniform3fv(L("u_dims"), new Float32Array(this.dims));
     gl.uniform2fv(
       L("viewport"),

@@ -1,12 +1,12 @@
-import { RayMarching } from "./ray-marching";
-import { load3dTexture } from "./texture";
+import { Renderer } from "./renderer";
+import { load3dTexture } from "./texture-utils";
 import * as THREE from "three";
 
 const dims = new THREE.Vector3(512, 512, 234);
 
 async function main() {
   const canvas = document.querySelector("canvas")!;
-  const renderer = new RayMarching(canvas, dims);
+  const renderer = new Renderer(canvas, dims);
 
   const image3d = await load3dTexture(dims);
 
