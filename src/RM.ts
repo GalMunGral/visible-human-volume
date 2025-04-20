@@ -9,7 +9,7 @@ export class RayMarching {
   private gl: WebGL2RenderingContext | null = null;
   private program: WebGLProgram | null = null;
 
-  private eye = new THREE.Vector3(1, 1, 0);
+  private eye = new THREE.Vector3(1, 1, 0.2);
   private forward = this.eye.clone().multiplyScalar(-1).normalize();
   private right = this.forward
     .clone()
@@ -29,7 +29,7 @@ export class RayMarching {
   private prevX = -1;
   private prevY = -1;
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(private canvas: HTMLCanvasElement, private dims: THREE.Vector3) {
     (async () => {
       const r = 1;
       canvas.width = 512 / r;
@@ -143,12 +143,7 @@ export class RayMarching {
     }
   }
 
-  public render(
-    texture3d: Uint8Array,
-    width: number,
-    height: number,
-    depth: number
-  ) {
+  public render(texture3d: Uint8Array) {
     const { gl, program } = this;
 
     if (!program) return;
@@ -160,9 +155,9 @@ export class RayMarching {
       gl.TEXTURE_3D,
       0,
       gl.RGBA,
-      width,
-      height,
-      depth,
+      this.dims.x,
+      this.dims.y,
+      this.dims.z,
       0,
       gl.RGBA,
       gl.UNSIGNED_BYTE,
@@ -186,19 +181,19 @@ export class RayMarching {
       return v.clone().applyMatrix3(RInv);
     };
 
-    gl.uniform1i(L(`volume`), 0);
+    gl.uniform1i(L("volume"), 0);
+    gl.uniform1f(L("peak"), Number(filterInput.value));
+    gl.uniform3fv(L("u_dims"), new Float32Array(this.dims));
     gl.uniform2fv(
-      L(`viewport`),
+      L("viewport"),
       new Float32Array([gl.canvas.width, gl.canvas.height])
     );
-    gl.uniform1f(L(`focus`), this.focus);
-    gl.uniform1f(L(`fov`), this.fov);
-    gl.uniform3fv(L(`eye`), new Float32Array(inObjectSpace(this.eye)));
-    gl.uniform3fv(L(`forward`), new Float32Array(inObjectSpace(this.forward)));
-    gl.uniform3fv(L(`up`), new Float32Array(inObjectSpace(this.up)));
-    gl.uniform3fv(L(`right`), new Float32Array(inObjectSpace(this.right)));
-
-    gl.uniform1f(L(`value`), Number(filterInput.value));
+    gl.uniform1f(L("focus"), this.focus);
+    gl.uniform1f(L("fov"), this.fov);
+    gl.uniform3fv(L("eye"), new Float32Array(inObjectSpace(this.eye)));
+    gl.uniform3fv(L("forward"), new Float32Array(inObjectSpace(this.forward)));
+    gl.uniform3fv(L("up"), new Float32Array(inObjectSpace(this.up)));
+    gl.uniform3fv(L("right"), new Float32Array(inObjectSpace(this.right)));
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);

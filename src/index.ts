@@ -1,15 +1,14 @@
 import { RayMarching } from "./RM";
 import { load3dTexture } from "./texture";
+import * as THREE from "three";
 
-(async function main() {
+const dims = new THREE.Vector3(512, 512, 234);
+
+async function main() {
   const canvas = document.querySelector("canvas")!;
-  const renderer = new RayMarching(canvas);
+  const renderer = new RayMarching(canvas, dims);
 
-  const sizeX = 512;
-  const sizeY = 512;
-  const sizeZ = 234;
-
-  const image3d = await load3dTexture(sizeX * sizeY, sizeZ);
+  const image3d = await load3dTexture(dims);
 
   let prev = -1;
   let rafHandle = -1;
@@ -18,8 +17,10 @@ import { load3dTexture } from "./texture";
   rafHandle = requestAnimationFrame(function frame(t: DOMHighResTimeStamp) {
     const dt = t - prev;
     renderer.rotateAboutZ(0.0005 * dt);
-    renderer.render(image3d, sizeX, sizeY, sizeZ);
+    renderer.render(image3d);
     prev = t;
     rafHandle = requestAnimationFrame(frame);
   });
-})();
+}
+
+main();

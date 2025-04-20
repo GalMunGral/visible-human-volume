@@ -1,4 +1,4 @@
-import { interpolateViridis, rgb } from "d3";
+import * as THREE from "three";
 
 export function imageToUint8Array(image: HTMLImageElement): Uint8ClampedArray {
   const canvas = new OffscreenCanvas(image.width, image.height);
@@ -25,15 +25,17 @@ async function loadImage(url: string): Promise<Uint8ClampedArray> {
   });
 }
 
-export async function load3dTexture(layerSize: number, numLayers: number) {
+export async function load3dTexture(dims: THREE.Vector3) {
+  const numLayers = dims.z;
+  const layerSize = dims.x * dims.y * 4;
   const tasks = new Array<Promise<Uint8ClampedArray>>(numLayers);
   for (let i = 0; i < numLayers; ++i) {
     tasks[i] = loadImage(`./public/texture/texture-${i}.png`);
   }
   const layers = await Promise.all(tasks);
-  const texture3d = new Uint8Array(layerSize * numLayers * 4);
+  const texture3d = new Uint8Array(layerSize * numLayers);
   for (let i = 0; i < numLayers; ++i) {
-    texture3d.set(layers[i], i * layerSize * 4);
+    texture3d.set(layers[i], i * layerSize);
   }
   return texture3d;
 }
