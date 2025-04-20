@@ -17,7 +17,7 @@ const vec3 tissue_color = vec3(0.7, 0.7, 0.9);
 const vec3 bone_color = vec3(0.96, 0.96, 0.86);
 
 const float band_width = 0.1;
-const float alpha = 10.0 / float(steps);
+const float alpha = 0.05;
 
 uniform sampler3D volume;
 uniform vec3 u_dims;
@@ -46,7 +46,7 @@ vec3 ray_dir() {
 }
 
 bool in_bounds(vec3 p, vec3 dims) {
-  return abs(p.x) < dims.x && abs(p.y) < dims.y && abs(p.z) < dims.z;
+  return abs(p.x) < 0.25 * dims.x && abs(p.y) < dims.y && abs(p.z) < dims.z;
 }
 
 vec3 get_texcoords(vec3 p, vec3 dims) {

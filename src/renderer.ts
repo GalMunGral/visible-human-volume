@@ -72,9 +72,9 @@ export class Renderer {
       gl.texParameteri(
         gl.TEXTURE_3D,
         gl.TEXTURE_MIN_FILTER,
-        gl.LINEAR_MIPMAP_NEAREST
+        gl.NEAREST_MIPMAP_NEAREST
       );
-      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
       window.addEventListener("keydown", (e) => {
         this.keydown[e.key] = true;
