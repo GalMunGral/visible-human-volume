@@ -17,7 +17,7 @@ const vec3 tissue_color = vec3(0.7, 0.7, 0.9);
 const vec3 bone_color = vec3(0.96, 0.96, 0.86);
 
 const float band_width = 0.1;
-const float alpha = 0.05;
+const float alpha = 0.1;
 
 uniform sampler3D volume;
 uniform vec3 u_dims;
@@ -73,7 +73,7 @@ float phong_shading(vec3 p, vec3 n) {
   vec3 e = normalize(eye - p);
   vec3 r = 2.0 * dot(l, n) * n - l;
   float ambient = 0.5;
-  float diffuse = 0.8 * clamp01(dot(n, l));
+  float diffuse = 0.5 * clamp01(dot(n, l));
   float specular = 0.5 * pow(clamp01(dot(e, r)), 2.0);
   return ambient + diffuse + specular;
 }

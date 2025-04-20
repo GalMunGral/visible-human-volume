@@ -16,7 +16,8 @@ async function main() {
 
   rafHandle = requestAnimationFrame(function frame(t: DOMHighResTimeStamp) {
     const dt = t - prev;
-    renderer.rotateAboutZ(0.0005 * dt);
+    renderer.rotateAboutZ(new THREE.Vector3(0, 0, 1), 0.0005 * dt);
+    renderer.rotateAboutZ(new THREE.Vector3(0, 1, 0), 0.0001 * dt);
     renderer.render(image3d);
     prev = t;
     rafHandle = requestAnimationFrame(frame);

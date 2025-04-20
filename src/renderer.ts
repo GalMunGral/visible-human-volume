@@ -31,8 +31,6 @@ export class Renderer {
 
   constructor(private canvas: HTMLCanvasElement, private dims: THREE.Vector3) {
     (async () => {
-      this.filterInput.value = "0";
-
       const r = 1;
       canvas.width = 512 / r;
       canvas.height = 512 / r;
@@ -136,12 +134,11 @@ export class Renderer {
       .normalize();
   }
 
-  public rotateAboutZ(angle: float) {
+  public rotateAboutZ(axis: THREE.Vector3, angle: float) {
     if (!this.pointerDown) {
-      const z = new THREE.Vector3(0, 0, 1);
-      this.e1.applyAxisAngle(z, angle);
-      this.e2.applyAxisAngle(z, angle);
-      this.e3.applyAxisAngle(z, angle);
+      this.e1.applyAxisAngle(axis, angle);
+      this.e2.applyAxisAngle(axis, angle);
+      this.e3.applyAxisAngle(axis, angle);
     }
   }
 
