@@ -81,8 +81,8 @@ float phong_shading(vec3 p, vec3 n) {
   vec3 v = normalize(camera_pos - p);
   vec3 r = 2. * dot(l, n) * n - l;
   float ambient = 0.5f;
-  float diffuse = 0.8f * clamp01(abs(dot(n, l)));
-  float specular = 0.8f * pow(clamp01(dot(v, r)), 5.);
+  float diffuse = 0.5f * clamp01(abs(dot(n, l)));
+  float specular = 0.5f * pow(clamp01(dot(v, r)), 5.);
   return ambient + diffuse + specular;
 }
 
