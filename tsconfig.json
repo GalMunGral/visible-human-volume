@@ -6,6 +6,7 @@
     "lib": ["ESNext", "DOM"],
     "types": ["./src/types.d.ts"],
     "noImplicitAny": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "bundler",
+    "strictNullChecks": true
   }
 }

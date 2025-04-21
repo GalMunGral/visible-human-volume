@@ -1,26 +1,39 @@
-import { Renderer } from "./renderer";
-import { load3dTexture } from "./texture-utils";
-import * as THREE from "three";
+import { Quaternion } from "three";
+import { GLRayMarcher } from "./GLRayMarcher/GLRayMarcher";
+import { Volume } from "./GLRayMarcher/Volume";
 
-const dims = new THREE.Vector3(512, 512, 234);
+const filterInput = document.querySelector("#filter") as HTMLInputElement;
+
+const WIDTH = 512;
+const HEIGHT = 512;
+const DEPTH = 234;
 
 async function main() {
   const canvas = document.querySelector("canvas")!;
-  const renderer = new Renderer(canvas, dims);
+  canvas.width = 512;
+  canvas.height = 512;
 
-  const image3d = await load3dTexture(dims);
+  const renderer = GLRayMarcher.from(canvas);
 
-  let prev = -1;
-  let rafHandle = -1;
-  cancelAnimationFrame(rafHandle);
+  const volume = new Volume(WIDTH, HEIGHT, DEPTH);
+  await volume.load((i) => `./public/texture/texture-${i}.png`);
+  renderer.uploadVolumeData(volume);
 
-  rafHandle = requestAnimationFrame(function frame(t: DOMHighResTimeStamp) {
-    const dt = t - prev;
-    renderer.rotateAboutZ(new THREE.Vector3(0, 0, 1), 0.0005 * dt);
-    renderer.rotateAboutZ(new THREE.Vector3(0, 1, 0), 0.0001 * dt);
-    renderer.render(image3d);
-    prev = t;
-    rafHandle = requestAnimationFrame(frame);
+  let lastTimestamp = -1;
+  requestAnimationFrame(function frame(t) {
+    if (!renderer.camera.screen.pointerDown) {
+      const quat = new Quaternion().setFromAxisAngle(
+        renderer.camera.up,
+        0.001 * (t - lastTimestamp)
+      );
+      renderer.camera.pos.applyQuaternion(quat);
+      renderer.camera.forward.applyQuaternion(quat);
+      renderer.camera.right.applyQuaternion(quat);
+      renderer.camera.up.applyQuaternion(quat);
+    }
+    renderer.render(Number(filterInput.value));
+    requestAnimationFrame(frame);
+    lastTimestamp = t;
   });
 }
 

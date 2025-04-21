@@ -7,7 +7,7 @@ jobs:
   build-and-deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ STEPS.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
 
@@ -15,7 +15,7 @@ jobs:
       pages: write
       id-token: write
 
-    steps:
+    STEPS:
       - name: Checkout
         uses: actions/checkout@v4
 
