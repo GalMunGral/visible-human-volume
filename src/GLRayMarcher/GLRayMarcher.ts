@@ -31,7 +31,7 @@ export class GLRayMarcher {
     this.program.createTexture3D("data", volume);
     const size = Math.max(volume.width, volume.height, volume.depth);
     this.program.setUniforms({
-      dims: [
+      volume_dims: [
         this.volume.width / size,
         this.volume.height / size,
         this.volume.depth / size,
