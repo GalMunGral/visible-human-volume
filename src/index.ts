@@ -10,8 +10,8 @@ const DEPTH = 234;
 
 async function main() {
   const canvas = document.querySelector("canvas")!;
-  canvas.width = 512;
-  canvas.height = 512;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   const renderer = GLRayMarcher.from(canvas);
 
