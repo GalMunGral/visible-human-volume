@@ -12,10 +12,9 @@ export class GLRayMarcher {
     const program = GLProgram.fromSource(screen, fragmentShaderSrc);
     const camera = new Camera(
       screen,
-      new Vector3(1, 1, 0),
-      new Vector3(0, 0, 0),
+      new Vector3(0.5, 0.5, 0),
       new Vector3(0, 0, 1),
-      Math.PI / 3,
+      75 * (Math.PI / 180),
       0.1
     );
     const rayMarcher = new GLRayMarcher(program, camera);

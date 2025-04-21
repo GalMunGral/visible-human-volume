@@ -19,13 +19,13 @@ export class GLScreen {
     });
 
     window.addEventListener("pointermove", (e) => {
+      const eventCoords = this.getEventCoords(e);
       if (this.pointerDown) {
         for (const fn of this.dragListeners) {
-          const eventCoords = this.getEventCoords(e);
           fn(this.lastEventCoords, eventCoords);
-          this.lastEventCoords = eventCoords;
         }
       }
+      this.lastEventCoords = eventCoords;
     });
   }
 

@@ -8,8 +8,8 @@ const float DRAW_DIST = 2.;
 const int RM_STEPS = 500;
 const float RM_STEP_SIZE = DRAW_DIST / float(RM_STEPS);
 
-const float BAND_WIDTH = 0.5f;
-const float ALPHA = 0.02f;
+const float BAND_WIDTH = 0.3f;
+const float ALPHA = 0.05f;
 
 uniform vec2 viewport;
 
@@ -56,18 +56,17 @@ vec3 ray() {
 }
 
 bool in_bounds(vec3 p, vec3 dims) {
-  return (abs(p.x) < 0.25f * dims.x && abs(p.y) < 0.5f * dims.y &&
-          abs(p.z) < dims.z);
+  return (abs(p.x) < 0.125 * dims.x && abs(p.y) < 0.25 * dims.y &&
+          abs(p.z) < 0.5 * dims.z);
 }
 
 vec3 get_texcoords(vec3 p, vec3 dims) {
-  return vec3(p.x / dims.x * 0.5f + 0.5f, p.y / dims.y * 0.5f + 0.5f,
-              p.z / dims.z * 0.5f + 0.5f);
+  return vec3(p.x / dims.x + 0.5f, p.y / dims.y + 0.5f, p.z / dims.z + 0.5f);
 }
 
 vec4 derivative(sampler3D sampler, vec3 texcoords, vec3 h) {
-  return texture(sampler, texcoords + h) -
-         texture(sampler, texcoords - h) / (2. * length(h));
+  return (texture(sampler, texcoords + h) - texture(sampler, texcoords - h)) /
+         (2. * length(h));
 }
 
 vec3 gradient(sampler3D sampler, vec3 texcoords) {
