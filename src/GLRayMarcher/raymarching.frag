@@ -2,14 +2,14 @@
 precision highp sampler3D;
 precision highp float;
 
-const float FD_STEP_SIZE = 0.1f;
+const float FD_STEP_SIZE = 0.1;
 
-const float DRAW_DIST = 2.;
+const float DRAW_DIST = 2.0;
 const int RM_STEPS = 500;
 const float RM_STEP_SIZE = DRAW_DIST / float(RM_STEPS);
 
-const float BAND_WIDTH = 0.3f;
-const float ALPHA = 0.05f;
+const float BAND_WIDTH = 0.3;
+const float ALPHA = 0.05;
 
 uniform vec2 viewport;
 
@@ -26,31 +26,31 @@ uniform float fovy;
 
 out vec4 fragColor;
 
-float clamp01(float v) { return clamp(v, 0., 1.); }
+float clamp01(float v) { return clamp(v, 0.0, 1.0); }
 
 /**
  * Copied from https://www.shadertoy.com/view/XtGGzG
  */
 vec3 viridis_quintic(float x) {
   x = clamp01(x);
-  vec4 x1 = vec4(1., x, x * x, x * x * x);
+  vec4 x1 = vec4(1.0, x, x * x, x * x * x);
   vec4 x2 = x1 * x1.w * x;
-  return vec3(dot(x1.xyzw, vec4(+0.280268003f, -0.143510503f, +2.225793877f,
-                                -14.815088879f)) +
-                  dot(x2.xy, vec2(+25.212752309f, -11.772589584f)),
-              dot(x1.xyzw, vec4(-0.002117546f, +1.617109353f, -1.909305070f,
-                                +2.701152864f)) +
-                  dot(x2.xy, vec2(-1.685288385f, +0.178738871f)),
-              dot(x1.xyzw, vec4(+0.300805501f, +2.614650302f, -12.019139090f,
-                                +28.933559110f)) +
-                  dot(x2.xy, vec2(-33.491294770f, +13.762053843f)));
+  return vec3(dot(x1.xyzw, vec4(+0.280268003, -0.143510503, +2.225793877,
+                                -14.815088879)) +
+                  dot(x2.xy, vec2(+25.212752309, -11.772589584)),
+              dot(x1.xyzw, vec4(-0.002117546, +1.617109353, -1.909305070,
+                                +2.701152864)) +
+                  dot(x2.xy, vec2(-1.685288385, +0.178738871)),
+              dot(x1.xyzw, vec4(+0.300805501, +2.614650302, -12.019139090,
+                                +28.933559110)) +
+                  dot(x2.xy, vec2(-33.491294770, +13.762053843)));
 }
 
 vec3 ray() {
-  float screen_height = 2. * screen_dist * tan(fovy / 2.);
+  float screen_height = 2.0 * screen_dist * tan(fovy / 2.0);
   float units_per_pixel = screen_height / viewport.y;
-  float x = (gl_FragCoord.x - viewport.x / 2.) * units_per_pixel;
-  float y = (gl_FragCoord.y - viewport.y / 2.) * units_per_pixel;
+  float x = (gl_FragCoord.x - viewport.x / 2.0) * units_per_pixel;
+  float y = (gl_FragCoord.y - viewport.y / 2.0) * units_per_pixel;
   return normalize(x * camera_right + y * camera_up +
                    screen_dist * camera_forward);
 }
@@ -61,32 +61,32 @@ bool in_bounds(vec3 p, vec3 dims) {
 }
 
 vec3 get_texcoords(vec3 p, vec3 dims) {
-  return vec3(p.x / dims.x + 0.5f, p.y / dims.y + 0.5f, p.z / dims.z + 0.5f);
+  return vec3(p.x / dims.x + 0.5, p.y / dims.y + 0.5, p.z / dims.z + 0.5);
 }
 
 vec4 derivative(sampler3D sampler, vec3 texcoords, vec3 h) {
   return (texture(sampler, texcoords + h) - texture(sampler, texcoords - h)) /
-         (2. * length(h));
+         (2.0 * length(h));
 }
 
 vec3 gradient(sampler3D sampler, vec3 texcoords) {
-  return vec3(derivative(sampler, texcoords, vec3(FD_STEP_SIZE, 0, 0)).r,
-              derivative(sampler, texcoords, vec3(0, FD_STEP_SIZE, 0)).r,
-              derivative(sampler, texcoords, vec3(0, 0, FD_STEP_SIZE)).r);
+  return vec3(derivative(sampler, texcoords, vec3(FD_STEP_SIZE, 0.0, 0.0)).r,
+              derivative(sampler, texcoords, vec3(0.0, FD_STEP_SIZE, 0.0)).r,
+              derivative(sampler, texcoords, vec3(0.0, 0.0, FD_STEP_SIZE)).r);
 }
 
 float phong_shading(vec3 p, vec3 n) {
   vec3 l = normalize(camera_pos + camera_right + camera_up);
   vec3 v = normalize(camera_pos - p);
-  vec3 r = 2. * dot(l, n) * n - l;
-  float ambient = 0.5f;
-  float diffuse = 0.5f * clamp01(abs(dot(n, l)));
-  float specular = 0.5f * pow(clamp01(dot(v, r)), 5.);
+  vec3 r = 2.0 * dot(l, n) * n - l;
+  float ambient = 0.5;
+  float diffuse = 0.5 * clamp01(abs(dot(n, l)));
+  float specular = 0.5 * pow(clamp01(dot(v, r)), 5.0);
   return ambient + diffuse + specular;
 }
 
 void main() {
-  vec4 accumulated = vec4(0.);
+  vec4 accumulated = vec4(0.0);
   vec3 cur_p = camera_pos;
   vec3 rm_step = RM_STEP_SIZE * ray();
 
@@ -100,13 +100,13 @@ void main() {
       float I = phong_shading(cur_p, n);
 
       float t = clamp01(abs(value - peak) / BAND_WIDTH);
-      float a = length(grad) > 0. ? mix(ALPHA, 0., t) : 0.;
+      float a = length(grad) > 0.0 ? mix(ALPHA, 0.0, t) : 0.0;
 
-      a *= 1. - accumulated.a;
-      accumulated.rgb += a * I * viridis_quintic(3. * value);
+      a *= 1.0 - accumulated.a;
+      accumulated.rgb += a * I * viridis_quintic(3.0 * value);
       accumulated.a += a;
     }
     cur_p += rm_step;
   }
-  fragColor = vec4(accumulated.rgb, 1.);
+  fragColor = vec4(accumulated.rgb, 1.0);
 }
