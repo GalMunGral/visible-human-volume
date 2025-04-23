@@ -2,20 +2,15 @@
 precision highp sampler3D;
 precision highp float;
 
-const float FD_STEP_SIZE = 0.1;
-
-const float DRAW_DIST = 2.0;
-const int RM_STEPS = 500;
+const float DRAW_DIST = 1.0;
+const int RM_STEPS = 200;
 const float RM_STEP_SIZE = DRAW_DIST / float(RM_STEPS);
-
-const float BAND_WIDTH = 0.3;
-const float ALPHA = 0.05;
+const float ALPHA = 0.2;
 
 uniform vec2 viewport;
 
 uniform sampler3D data;
 uniform vec3 volume_dims;
-uniform float peak;
 
 uniform vec3 camera_pos;
 uniform vec3 camera_forward;
@@ -56,35 +51,13 @@ vec3 ray() {
 }
 
 bool in_bounds(vec3 p, vec3 dims) {
-  return (abs(p.x) < 0.125 * dims.x && abs(p.y) < 0.25 * dims.y &&
+  return (abs(p.x) < 0.5 * dims.x && abs(p.y) < 0.5 * dims.y &&
           abs(p.z) < 0.5 * dims.z);
 }
 
 vec3 get_texcoords(vec3 p, vec3 dims) {
   return vec3(p.x / dims.x + 0.5, p.y / dims.y + 0.5, p.z / dims.z + 0.5);
 }
-
-vec4 derivative(sampler3D sampler, vec3 texcoords, vec3 h) {
-  return (texture(sampler, texcoords + h) - texture(sampler, texcoords - h)) /
-         (2.0 * length(h));
-}
-
-vec3 gradient(sampler3D sampler, vec3 texcoords) {
-  return vec3(derivative(sampler, texcoords, vec3(FD_STEP_SIZE, 0.0, 0.0)).r,
-              derivative(sampler, texcoords, vec3(0.0, FD_STEP_SIZE, 0.0)).r,
-              derivative(sampler, texcoords, vec3(0.0, 0.0, FD_STEP_SIZE)).r);
-}
-
-float phong_shading(vec3 p, vec3 n) {
-  vec3 l = normalize(camera_pos + camera_right + camera_up);
-  vec3 v = normalize(camera_pos - p);
-  vec3 r = 2.0 * dot(l, n) * n - l;
-  float ambient = 0.5;
-  float diffuse = 0.5 * clamp01(abs(dot(n, l)));
-  float specular = 0.5 * pow(clamp01(dot(v, r)), 5.0);
-  return ambient + diffuse + specular;
-}
-
 void main() {
   vec4 accumulated = vec4(0.0);
   vec3 cur_p = camera_pos;
@@ -94,16 +67,10 @@ void main() {
     if (in_bounds(cur_p, volume_dims)) {
       vec3 texcoords = get_texcoords(cur_p, volume_dims);
       float value = texture(data, texcoords).r;
-      vec3 grad = gradient(data, texcoords);
-
-      vec3 n = normalize(grad);
-      float I = phong_shading(cur_p, n);
-
-      float t = clamp01(abs(value - peak) / BAND_WIDTH);
-      float a = length(grad) > 0.0 ? mix(ALPHA, 0.0, t) : 0.0;
-
+      vec3 c = viridis_quintic(value);
+      float a = mix(0.0, ALPHA,  value);
       a *= 1.0 - accumulated.a;
-      accumulated.rgb += a * I * viridis_quintic(3.0 * value);
+      accumulated.rgb += a * c;
       accumulated.a += a;
     }
     cur_p += rm_step;

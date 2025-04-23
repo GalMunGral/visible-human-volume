@@ -38,7 +38,7 @@ export class GLRayMarcher {
     });
   }
 
-  public render(peak: number) {
+  public render() {
     this.program.setUniforms({
       viewport: [this.camera.screen.width, this.camera.screen.height],
       camera_pos: this.camera.pos,
@@ -47,7 +47,6 @@ export class GLRayMarcher {
       camera_up: this.camera.up,
       screen_dist: this.camera.screenDist,
       fovy: this.camera.fovy,
-      peak: peak,
     });
     this.program.draw();
   }

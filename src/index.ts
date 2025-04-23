@@ -2,8 +2,6 @@ import { Quaternion } from "three";
 import { GLRayMarcher } from "./GLRayMarcher/GLRayMarcher";
 import { Volume } from "./GLRayMarcher/Volume";
 
-const filterInput = document.querySelector("#filter") as HTMLInputElement;
-
 const WIDTH = 512;
 const HEIGHT = 512;
 const DEPTH = 234;
@@ -31,7 +29,7 @@ async function main() {
       renderer.camera.right.applyQuaternion(quat);
       renderer.camera.up.applyQuaternion(quat);
     }
-    renderer.render(Number(filterInput.value));
+    renderer.render();
     requestAnimationFrame(frame);
     lastTimestamp = t;
   });
