@@ -8,6 +8,10 @@
 
 This demo is intended for those familiar with surface rendering but new to volume rendering. The goal is to show that real-time ray-marched volume rendering of a CT dataset is well within reach of a straightforward fragment shader.
 
-### Strategy
+## Technical Challenges
 
-The full CT volume is stored as a 3D texture. A single fullscreen quad covers the viewport; for each fragment, the shader casts a ray from the camera position through the volume, stepping forward and accumulating color and opacity at each sample. The result is composited front-to-back and mapped through the Viridis colormap.
+### Ray marching
+
+**Problem.** Unlike surface rendering, volume rendering requires integrating optical properties along a ray through the volume.
+
+**Solution.** For each fragment, a ray is cast from the camera through the 3D texture. Samples are accumulated along the ray using front-to-back compositing, with density mapped to color via the Viridis colormap.
